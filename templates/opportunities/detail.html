@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ opportunity.title }} — Explainable Match Breakdown{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header Card -->
+  <div class="sp-card p-4 mb-4">
+    <div class="row align-items-center gy-3">
+      <div class="col-lg-8">
+        <span class="badge bg-primary-subtle text-primary fw-bold mb-2">{{ opportunity.get_category_display }}</span>
+        <h2 class="fw-bold mb-1">{{ opportunity.title }}</h2>
+        <h5 class="text-muted mb-3"><i class="fa-solid fa-building me-1"></i> {{ opportunity.organization }}</h5>
+
+        <div class="d-flex flex-wrap gap-4 text-muted small">
+          <div><i class="fa-solid fa-location-dot text-danger me-1"></i> {{ opportunity.location }} ({{ opportunity.get_location_type_display }})</div>
+          <div><i class="fa-solid fa-clock text-info me-1"></i> {{ opportunity.duration }}</div>
+          <div><i class="fa-solid fa-money-bill-wave text-success me-1"></i> {{ opportunity.stipend }}</div>
+          <div><i class="fa-solid fa-calendar text-warning me-1"></i> Deadline: {{ opportunity.application_deadline }}</div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 text-lg-end">
+        {% if match_explanation %}
+          <div class="p-3 bg-light rounded-3 text-center mb-3">
+            <span class="text-muted fs-8 text-uppercase fw-bold">Calculated Match Score</span>
+            <h1 class="display-5 fw-extrabold {% if match_explanation.score_pct >= 85 %}text-success{% else %}text-primary{% endif %} mb-0">
+              {{ match_explanation.score_pct }}%
+            </h1>
+          </div>
+        {% endif %}
+
+        {% if already_applied %}
+          <button class="btn btn-secondary w-100 py-2 disabled" disabled>
+            <i class="fa-solid fa-check-circle me-1"></i> Application Submitted
+          </button>
+        {% else %}
+          <button class="btn btn-sp-primary w-100 py-2" data-bs-toggle="modal" data-bs-target="#applyModal">
+            <i class="fa-solid fa-paper-plane me-1"></i> Apply for Opportunity
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Explainable Recommendation Engine Section -->
+  {% if match_explanation %}
+    <div class="sp-glass-card p-4 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0"><i class="fa-solid fa-brain text-primary me-2"></i> Explainable Recommendation Breakdown</h4>
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+          <i class="fa-solid fa-scale-balanced me-1"></i> 100% Fair & Transparent
+        </span>
+      </div>
+
+      <!-- Conceptual Weight Breakdown Pills -->
+      <div class="p-3 bg-light rounded-3 mb-4">
+        <div class="text-muted fs-8 fw-bold text-uppercase mb-2">Recommendation Engine Weight Breakdown</div>
+        <div class="row g-2 text-center fs-8">
+          <div class="col"><div class="bg-white p-2 border rounded">Skill Coverage <strong>40%</strong></div></div>
+          <div class="col"><div class="bg-white p-2 border rounded">Evidence Strength <strong>25%</strong></div></div>
+          <div class="col"><div class="bg-white p-2 border rounded">Project Relevance <strong>15%</strong></div></div>
+          <div class="col"><div class="bg-white p-2 border rounded">Experience <strong>10%</strong></div></div>
+          <div class="col"><div class="bg-white p-2 border rounded">Credentials <strong>10%</strong></div></div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Why You Match -->
+        <div class="col-md-6">
+          <div class="p-3 border border-success-subtle bg-success-subtle rounded-3 h-100">
+            <h5 class="fw-bold text-success mb-3"><i class="fa-solid fa-circle-check me-2"></i> Why You Match</h5>
+            {% for ms in match_explanation.matched_skills %}
+              <div class="bg-white p-3 rounded mb-2 shadow-sm border-start border-success border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bold text-dark">{{ ms.skill_name }}</span>
+                  <span class="badge bg-success">{{ ms.student_score }}% {{ ms.proficiency }}</span>
+                </div>
+                <div class="text-muted fs-8 mt-1">
+                  Supported by:
+                  {% for t in ms.evidence_titles %}
+                    <span class="badge bg-light text-dark border me-1">{{ t }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            {% empty %}
+              <div class="text-muted small">No direct skill overlaps found.</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Missing Skills / Skill Gaps -->
+        <div class="col-md-6">
+          <div class="p-3 border border-warning-subtle bg-warning-subtle rounded-3 h-100">
+            <h5 class="fw-bold text-warning mb-3"><i class="fa-solid fa-triangle-exclamation me-2"></i> Missing Skills & Gaps</h5>
+            {% for gap in match_explanation.missing_skills %}
+              <div class="bg-white p-3 rounded mb-2 shadow-sm border-start border-warning border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bold text-dark">{{ gap.skill_name }}</span>
+                  <span class="badge bg-warning text-dark">{{ gap.requirement_type }}</span>
+                </div>
+                <div class="text-muted fs-8 mt-1">
+                  Current Evidence: <strong>{{ gap.current_score }}%</strong> | Target Expected: <strong>{{ gap.target_score }}%</strong>
+                </div>
+              </div>
+            {% empty %}
+              <div class="bg-white p-3 rounded text-success fw-semibold">
+                🎉 No skill gaps! You satisfy 100% of required skills.
+              </div>
+            {% endfor %}
+
+            <!-- Actionable Recommendation -->
+            <div class="bg-white p-3 rounded mt-3 border">
+              <div class="text-muted fs-8 fw-bold text-uppercase mb-1"><i class="fa-solid fa-lightbulb text-warning me-1"></i> Recommended Next Step</div>
+              <p class="small text-dark mb-0">{{ match_explanation.recommendation }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Opportunity Description -->
+  <div class="sp-card p-4">
+    <h5 class="fw-bold mb-3">Role Overview & Description</h5>
+    <p class="text-secondary leading-relaxed mb-4">{{ opportunity.description }}</p>
+
+    <h6 class="fw-bold mb-2">Required Skills & Evidence Expectations</h6>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      {% for os in opportunity.opportunity_skills.all %}
+        <span class="badge p-2 {% if os.requirement_type == 'REQUIRED' %}bg-primary{% else %}bg-secondary{% endif %}">
+          {{ os.skill.name }} ({{ os.get_requirement_type_display }})
+        </span>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Apply -->
+<div class="modal fade" id="applyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold"><i class="fa-solid fa-paper-plane me-2"></i> Apply for {{ opportunity.title }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="{% url 'apply_opportunity' opp_id=opportunity.id %}">
+        {% csrf_token %}
+        <div class="modal-body p-4">
+          <p class="text-muted small mb-3">Your application will attach your verified Skill Passport. You can include a short cover statement below.</p>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Cover Note / Brief Statement</label>
+            <textarea name="cover_note" class="form-control" rows="4" placeholder="Highlight key coursework or GitHub projects relevant to this role..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sp-primary">Submit Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

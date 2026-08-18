@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Overview — SkillPassport{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row g-4">
+
+    <!-- Sidebar Navigation -->
+    <div class="col-lg-3 col-xl-2">
+      <div class="sp-card p-3 sticky-top" style="top: 80px; z-index: 100;">
+        <div class="d-flex align-items-center gap-3 p-2 mb-3 border-bottom">
+          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5" style="width: 44px; height: 44px;">
+            {{ student.user.first_name|slice:":1" }}
+          </div>
+          <div class="overflow-hidden">
+            <h6 class="fw-bold mb-0 text-truncate">{{ student.user.get_full_name }}</h6>
+            <span class="text-muted fs-8 d-block text-truncate">{{ student.degree }}</span>
+          </div>
+        </div>
+
+        <ul class="nav nav-pills flex-column gap-1">
+          <li class="nav-item">
+            <a class="nav-link active bg-primary text-white" href="{% url 'dashboard_overview' %}">
+              <i class="fa-solid fa-gauge me-2"></i> Overview
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="{% url 'public_passport' slug=student.passport_slug %}">
+              <i class="fa-solid fa-id-card me-2 text-primary"></i> My Skill Passport
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="{% url 'manage_evidence' %}">
+              <i class="fa-solid fa-certificate me-2 text-success"></i> Evidence Manager
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="{% url 'opportunities_list' %}">
+              <i class="fa-solid fa-briefcase me-2 text-info"></i> Opportunities
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="{% url 'skill_gaps_view' %}">
+              <i class="fa-solid fa-chart-line-down me-2 text-warning"></i> Skill Gaps
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="{% url 'teams_view' %}">
+              <i class="fa-solid fa-users-rectangle me-2 text-accent"></i> Team Matching
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="{% url 'applications_list' %}">
+              <i class="fa-solid fa-paper-plane me-2 text-secondary"></i> Applications
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="col-lg-9 col-xl-10">
+
+      <!-- Header Welcome Banner -->
+      <div class="sp-glass-card p-4 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+          <h3 class="fw-bold mb-1">Welcome back, {{ student.user.first_name }}! 👋</h3>
+          <p class="text-muted mb-0">Your Skill Passport is active and matching with 17 verified opportunities.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="{% url 'public_passport' slug=student.passport_slug %}" class="btn btn-sp-outline btn-sm">
+            <i class="fa-solid fa-share-nodes me-1"></i> Share Passport
+          </a>
+          <a href="{% url 'manage_evidence' %}" class="btn btn-sp-primary btn-sm">
+            <i class="fa-solid fa-plus me-1"></i> Add Evidence
+          </a>
+        </div>
+      </div>
+
+      <!-- Overview Metric Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-md-3">
+          <div class="sp-card p-3 text-center">
+            <div class="text-muted fs-8 fw-bold text-uppercase mb-1">Skill Strength</div>
+            <h2 class="fw-bold text-primary mb-0">{{ student.overall_skill_score }}%</h2>
+            <div class="progress mt-2" style="height: 6px;">
+              <div class="progress-bar bg-primary" style="width: {{ student.overall_skill_score }}%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-md-3">
+          <div class="sp-card p-3 text-center">
+            <div class="text-muted fs-8 fw-bold text-uppercase mb-1">Verified Evidence</div>
+            <h2 class="fw-bold text-success mb-0">{{ verified_count }}</h2>
+            <span class="badge badge-verified mt-1"><i class="fa-solid fa-check me-1"></i> 100% Cryptographic Proof</span>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-md-3">
+          <div class="sp-card p-3 text-center">
+            <div class="text-muted fs-8 fw-bold text-uppercase mb-1">Opportunity Matches</div>
+            <h2 class="fw-bold text-info mb-0">{{ opportunity_matches_count }}</h2>
+            <span class="text-muted fs-8">Top score: {{ top_matches.0.match.score_pct }}%</span>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-md-3">
+          <div class="sp-card p-3 text-center">
+            <div class="text-muted fs-8 fw-bold text-uppercase mb-1">Skill Gaps</div>
+            <h2 class="fw-bold text-warning mb-0">{{ skill_gaps|length }}</h2>
+            <a href="{% url 'skill_gaps_view' %}" class="text-warning fs-8 fw-bold text-decoration-none">View Recommendations &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts & Visual Analytics Section -->
+      <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+          <div class="sp-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0">Evidence-Backed Skill Proficiency</h5>
+              <span class="badge bg-light text-dark border">Chart.js Analytics</span>
+            </div>
+            <canvas id="skillDistributionChart" height="130"></canvas>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="sp-card p-4 h-100">
+            <h5 class="fw-bold mb-3">Evidence Category Breakdown</h5>
+            <canvas id="evidenceCategoryChart" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Opportunity Matches List -->
+      <div class="sp-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h5 class="fw-bold mb-0">Top Explainable Opportunity Matches</h5>
+            <p class="text-muted small mb-0">Matched strictly by skill coverage and verified evidence strength.</p>
+          </div>
+          <a href="{% url 'opportunities_list' %}" class="btn btn-sm btn-light border fw-semibold">View All 17 Opportunities</a>
+        </div>
+
+        <div class="row g-3">
+          {% for item in top_matches %}
+            <div class="col-md-6">
+              <div class="p-3 border rounded-3 bg-white h-100 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="fw-bold mb-0 text-primary">{{ item.opportunity.title }}</h6>
+                    <span class="badge {% if item.match.score_pct >= 85 %}bg-success{% else %}bg-primary{% endif %} fs-7">
+                      {{ item.match.score_pct }}% Match
+                    </span>
+                  </div>
+                  <div class="text-muted small mb-2"><i class="fa-regular fa-building me-1"></i> {{ item.opportunity.organization }} &bull; {{ item.opportunity.get_location_type_display }}</div>
+                  
+                  <!-- Matched Skills Pills -->
+                  <div class="d-flex flex-wrap gap-1 mb-3">
+                    {% for ms in item.match.matched_skills|slice:":3" %}
+                      <span class="badge bg-success-subtle text-success border border-success-subtle fs-8">
+                        <i class="fa-solid fa-check me-1"></i> {{ ms.skill_name }}
+                      </span>
+                    {% endfor %}
+                    {% for gap in item.match.missing_skills|slice:":2" %}
+                      <span class="badge bg-warning-subtle text-warning border border-warning-subtle fs-8">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Missing: {{ gap.skill_name }}
+                      </span>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <a href="{% url 'opportunity_detail' opp_id=item.opportunity.id %}" class="btn btn-sm btn-outline-primary w-100">
+                  Inspect Explainable Match &rarr;
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/charts.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SkillPassport — Turn Your Learning Into Opportunity{% endblock %}</title>
+  <meta name="description" content="AI-Powered Student Skill Passport & Explainable Opportunity Matching Platform. Convert verified coursework, projects, and credentials into career opportunities.">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Custom Stylesheet -->
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Cosmic Black Hole Flare Visual Layer -->
+  <div class="cosmic-blackhole-container">
+    <div class="cosmic-blackhole-flare">
+      <div class="cosmic-ring"></div>
+      <div class="cosmic-void"></div>
+    </div>
+  </div>
+
+  <!-- Sticky SaaS Navbar -->
+  <nav class="navbar navbar-expand-lg sp-navbar py-2">
+    <div class="container">
+      <a class="navbar-brand sp-brand" href="{% url 'home' %}">
+        <i class="fa-solid fa-passport text-primary"></i> SkillPassport
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#spNav" aria-controls="spNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="spNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'home' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'opportunities_list' %}">Opportunities</a></li>
+          {% if user.is_authenticated and user.student_profile %}
+            <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'dashboard_overview' %}">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'public_passport' slug=user.student_profile.passport_slug %}">Skill Passport</a></li>
+            <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'skill_gaps_view' %}">Skill Gaps</a></li>
+            <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'teams_view' %}">Teams</a></li>
+          {% elif user.is_authenticated and user.recruiter_profile %}
+            <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'recruiter_dashboard' %}">Recruiter Portal</a></li>
+            <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'create_opportunity' %}">Post Opportunity</a></li>
+            <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'candidate_search' %}">Search Candidates</a></li>
+          {% endif %}
+        </ul>
+
+        <div class="d-flex align-items-center gap-3">
+          <!-- Theme Toggle -->
+          <button class="btn btn-sm border-0" id="themeToggleBtn" title="Toggle Light/Dark Theme">
+            <i class="fa-solid fa-sun text-warning fs-5"></i>
+          </button>
+
+          {% if user.is_authenticated %}
+            <!-- Notifications Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-sm btn-dark position-relative border-0 rounded-circle p-2" id="notificationDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-bell fs-5 text-white"></i>
+                {% if unread_notifications_count > 0 %}
+                  <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" id="notifBadge">
+                    <span class="visually-hidden">New notifications</span>
+                  </span>
+                {% endif %}
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 sp-glass-card" style="width: 320px;">
+                <li class="dropdown-header fw-bold text-white d-flex justify-content-between align-items-center">
+                  <span>Notifications</span>
+                  <span class="badge bg-primary rounded-pill">{{ unread_notifications_count }} unread</span>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                {% for notif in latest_notifications %}
+                  <li class="mb-2">
+                    <a class="dropdown-item rounded p-2 text-wrap text-white" href="{{ notif.link_url }}">
+                      <div class="fw-semibold fs-7">{{ notif.title }}</div>
+                      <div class="text-muted small fs-8">{{ notif.message|truncatewords:10 }}</div>
+                    </a>
+                  </li>
+                {% empty %}
+                  <li class="text-center text-muted p-2 fs-7">No notifications yet</li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <!-- Profile Menu -->
+            <div class="dropdown">
+              <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle gap-2" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 38px; height: 38px;">
+                  {{ user.first_name|default:user.username|slice:":1"|upper }}
+                </div>
+                <span class="d-none d-md-inline fw-semibold text-white">{{ user.first_name|default:user.username }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end shadow border-0 sp-glass-card" aria-labelledby="userDropdown">
+                {% if user.student_profile %}
+                  <li><a class="dropdown-item text-white" href="{% url 'dashboard_overview' %}"><i class="fa-solid fa-gauge me-2 text-primary"></i> Dashboard</a></li>
+                  <li><a class="dropdown-item text-white" href="{% url 'public_passport' slug=user.student_profile.passport_slug %}"><i class="fa-solid fa-id-card me-2 text-primary"></i> My Passport</a></li>
+                  <li><a class="dropdown-item text-white" href="{% url 'manage_evidence' %}"><i class="fa-solid fa-certificate me-2 text-primary"></i> My Evidence</a></li>
+                  <li><a class="dropdown-item text-white" href="{% url 'applications_list' %}"><i class="fa-solid fa-paper-plane me-2 text-primary"></i> Applications</a></li>
+                {% elif user.recruiter_profile %}
+                  <li><a class="dropdown-item text-white" href="{% url 'recruiter_dashboard' %}"><i class="fa-solid fa-briefcase me-2 text-primary"></i> Recruiter Dashboard</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket me-2"></i> Log Out</a></li>
+              </ul>
+            </div>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-sp-outline">Log In</a>
+            <a href="{% url 'register' %}" class="btn btn-sp-primary">Get Started</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Messages / Alerts -->
+  {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 sp-glass-card text-white" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Content Container -->
+  <main class="flex-grow-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="sp-glass-card py-4 mt-5 border-top-0 rounded-0">
+    <div class="container text-center text-md-start">
+      <div class="row align-items-center">
+        <div class="col-md-6 mb-3 mb-md-0">
+          <div class="sp-brand fs-5 mb-1">
+            <i class="fa-solid fa-passport text-primary"></i> SkillPassport
+          </div>
+          <p class="text-muted small mb-0">"Turn Your Learning Into Opportunity."</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="text-muted small mb-0">&copy; 2026 SkillPassport AI Platform. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'js/passport.js' %}"></script>
+  <script src="{% static 'js/cosmic.js' %}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

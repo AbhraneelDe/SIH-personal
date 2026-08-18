@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Server Error — SkillPassport{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+  <div class="py-5">
+    <h1 class="display-1 fw-bold text-danger">500</h1>
+    <h3 class="fw-bold mb-3">Internal System Error</h3>
+    <p class="text-muted mb-4">Our servers encountered an unexpected condition. Please try again or return to your dashboard.</p>
+    <a href="{% url 'home' %}" class="btn btn-sp-primary">Return to Home Page</a>
+  </div>
+</div>
+{% endblock %}

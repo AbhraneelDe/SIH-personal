@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications — SkillPassport{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1"><i class="fa-solid fa-paper-plane text-primary me-2"></i> My Applications</h3>
+      <p class="text-muted mb-0">Track the evidence review status of your submitted applications.</p>
+    </div>
+    <a href="{% url 'opportunities_list' %}" class="btn btn-sp-primary">Explore More Opportunities</a>
+  </div>
+
+  <div class="sp-card p-4">
+    <div class="table-responsive">
+      <table class="table align-middle table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Opportunity</th>
+            <th>Organization</th>
+            <th>Match Score at Apply</th>
+            <th>Status</th>
+            <th>Applied Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in applications %}
+            <tr>
+              <td><strong class="position-title">{{ app.opportunity.title }}</strong></td>
+              <td class="text-muted small">{{ app.opportunity.organization }}</td>
+              <td>
+                <span class="badge bg-primary fs-7">{{ app.match_score_pct_at_apply }}% Match</span>
+              </td>
+              <td>
+                {% if app.status == 'SHORTLISTED' or app.status == 'ACCEPTED' %}
+                  <span class="badge bg-success">{{ app.get_status_display }}</span>
+                {% elif app.status == 'UNDER_REVIEW' %}
+                  <span class="badge bg-info">{{ app.get_status_display }}</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ app.get_status_display }}</span>
+                {% endif %}
+              </td>
+              <td class="small text-muted">{{ app.applied_at|date:"M d, Y" }}</td>
+              <td>
+                <a href="{% url 'opportunity_detail' opp_id=app.opportunity.id %}" class="btn btn-sm btn-light border">
+                  View Opportunity
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">
+                You haven't applied to any opportunities yet.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

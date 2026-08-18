@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Evidence — SkillPassport{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1"><i class="fa-solid fa-certificate text-success me-2"></i> Verified Evidence Manager</h3>
+      <p class="text-muted mb-0">Convert coursework, hackathons, and certifications into tamper-proof skill evidence.</p>
+    </div>
+    <button class="btn btn-sp-primary" data-bs-toggle="modal" data-bs-target="#addEvidenceModal">
+      <i class="fa-solid fa-plus me-1"></i> Submit New Evidence
+    </button>
+  </div>
+
+  <!-- Evidence List -->
+  <div class="row g-4">
+    {% for ev in evidences %}
+      <div class="col-md-6">
+        <div class="sp-card p-4 h-100 d-flex flex-column justify-content-between">
+          <div>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="badge bg-primary-subtle text-primary fw-bold">{{ ev.get_evidence_type_display }}</span>
+              {% if ev.verification_status == 'VERIFIED' %}
+                <span class="badge badge-verified"><i class="fa-solid fa-circle-check"></i> Verified</span>
+              {% elif ev.verification_status == 'PENDING' %}
+                <span class="badge badge-pending"><i class="fa-solid fa-clock"></i> Pending Check</span>
+              {% else %}
+                <span class="badge badge-unverified"><i class="fa-solid fa-xmark"></i> Unverified</span>
+              {% endif %}
+            </div>
+
+            <h5 class="fw-bold text-dark mb-1">{{ ev.title }}</h5>
+            <div class="text-muted small mb-2"><i class="fa-solid fa-building me-1"></i> {{ ev.issuing_organization }} &bull; {{ ev.issue_date }}</div>
+            <p class="text-secondary small mb-3">{{ ev.description }}</p>
+
+            {% if ev.url_or_link %}
+              <div class="mb-3">
+                <a href="{{ ev.url_or_link }}" target="_blank" class="text-primary small text-decoration-none fw-semibold">
+                  <i class="fa-solid fa-link me-1"></i> {{ ev.url_or_link|truncatechars:45 }}
+                </a>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="border-top pt-3 d-flex justify-content-between align-items-center">
+            <span class="text-muted fs-8">Confidence Level: <strong>{{ ev.confidence_level }}%</strong></span>
+            <span class="text-success fs-8 fw-bold"><i class="fa-solid fa-shield me-1"></i> Verification Signature OK</span>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center py-5 text-muted">
+        <i class="fa-solid fa-folder-open display-4 mb-3 d-block"></i>
+        <h5>No evidence records added yet.</h5>
+        <p class="small">Click "Submit New Evidence" to import coursework, GitHub projects, or certifications.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Modal: Add New Evidence -->
+<div class="modal fade" id="addEvidenceModal" tabindex="-1" aria-labelledby="addEvidenceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold" id="addEvidenceModalLabel"><i class="fa-solid fa-plus-circle me-2"></i> Submit New Evidence Item</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form method="post" action="{% url 'manage_evidence' %}">
+        {% csrf_token %}
+        <div class="modal-body p-4">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Evidence Type</label>
+              <select name="evidence_type" class="form-select" required>
+                <option value="COURSEWORK">Verified Coursework</option>
+                <option value="PROJECT" selected>Practical Project / GitHub</option>
+                <option value="COMPETITION">Hackathon / Competition</option>
+                <option value="CREDENTIAL">Micro-Credential / Certificate</option>
+                <option value="EXPERIENCE">Internship / Practical Work</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Title of Achievement / Course</label>
+              <input type="text" name="title" class="form-control" placeholder="e.g. Distributed Database Engine Project" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Issuing Organization / Institution</label>
+              <input type="text" name="issuing_organization" class="form-control" placeholder="e.g. Stanford University / GitHub / AWS" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Date of Completion / Issue</label>
+              <input type="date" name="issue_date" class="form-control" value="2026-02-01" required>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">Proof Link / Certificate URL / Repository Link</label>
+              <input type="url" name="url_or_link" class="form-control" placeholder="https://github.com/username/project-repo or certificate URL">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">Description of Technical Scope</label>
+              <textarea name="description" class="form-control" rows="3" placeholder="Explain the key architecture, libraries used, and verified outcome..."></textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">Select Associated Skills Proven by this Evidence</label>
+              <div class="row g-2 max-h-200 overflow-y-auto border p-2 rounded">
+                {% for sk in skills %}
+                  <div class="col-md-4">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="skills" value="{{ sk.id }}" id="sk_{{ sk.id }}">
+                      <label class="form-check-label small" for="sk_{{ sk.id }}">{{ sk.name }}</label>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sp-primary">Verify & Submit Evidence</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

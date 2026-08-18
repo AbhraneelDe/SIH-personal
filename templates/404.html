@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found — SkillPassport{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+  <div class="py-5">
+    <h1 class="display-1 fw-bold text-primary">404</h1>
+    <h3 class="fw-bold mb-3">Page Not Found</h3>
+    <p class="text-muted mb-4">The Skill Passport link or page you requested does not exist or has been moved.</p>
+    <a href="{% url 'home' %}" class="btn btn-sp-primary">Return to Home Page</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}SkillPassport — Your Skills. Your Evidence. Your Next Opportunity.{% endblock %}
+
+{% block content %}
+<!-- Cosmic Hero Section -->
+<section class="hero-wrapper">
+  <div class="container relative-z">
+    <div class="row align-items-center gy-5">
+      <!-- Left Hero Text & CTA -->
+      <div class="col-lg-6">
+        <span class="badge sp-glass-card text-info fw-bold px-3 py-2 rounded-pill mb-3 border border-info border-opacity-25 shadow-sm">
+          <i class="fa-solid fa-sparkles me-1 text-cyan"></i> 👋 Hello, Welcome to SkillPassport
+        </span>
+        
+        <h1 class="display-4 fw-extrabold mb-3 text-balance text-white">
+          Turn Your Skills Into <br><span class="text-gradient">Verified Opportunities</span>
+        </h1>
+        
+        <p class="lead text-light-slate mb-4 fs-5" style="color: #cbd5e1 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
+          Build an explainable, proof-backed digital skill passport from coursework, projects, and credentials — then get matched with top tech teams & recruiters.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 mb-5">
+          {% if user.is_authenticated %}
+            <a href="{% url 'dashboard_overview' %}" class="btn btn-sp-primary btn-lg">
+              View My Work <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+          {% else %}
+            <a href="{% url 'register' %}" class="btn btn-sp-primary btn-lg">
+              View My Work <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+            <a href="{% url 'demo_login' role='student' %}" class="btn btn-sp-outline btn-lg">
+              Download CV <i class="fa-solid fa-download ms-1"></i>
+            </a>
+          {% endif %}
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="d-flex align-items-center gap-4 small" style="color: #cbd5e1 !important;">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-shield-check text-success fs-6"></i> Verified Proof
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-brands fa-github text-cyan fs-6"></i> GitHub Repos
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-trophy text-warning fs-6"></i> Hackathon Badges
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side Visual: Glowing Skill Orbit Diagram (Matching Screenshot) -->
+      <div class="col-lg-6">
+        <div class="orbital-container">
+          <!-- Orbital Concentric Rings -->
+          <div class="orbit-ring ring-1"></div>
+          <div class="orbit-ring ring-2"></div>
+          <div class="orbit-ring ring-3"></div>
+
+          <!-- Central Core Node -->
+          <div class="orbit-center-node">
+            <i class="fa-solid fa-code"></i>
+          </div>
+
+          <!-- Orbiting Skill Nodes -->
+          <!-- Inner Orbit -->
+          <div class="orbit-skill-node" style="top: 18%; left: 48%;">
+            <i class="fa-brands fa-react text-info"></i> React
+          </div>
+          <div class="orbit-skill-node" style="bottom: 18%; left: 45%;">
+            <i class="fa-brands fa-node-js text-success"></i> Node.js
+          </div>
+
+          <!-- Middle Orbit -->
+          <div class="orbit-skill-node" style="top: 30%; left: 10%;">
+            <i class="fa-solid fa-wind text-cyan"></i> Tailwind CSS
+          </div>
+          <div class="orbit-skill-node" style="top: 28%; right: 10%;">
+            <i class="fa-brands fa-square-js text-warning"></i> JavaScript
+          </div>
+          <div class="orbit-skill-node" style="bottom: 28%; left: 8%;">
+            <i class="fa-solid fa-code text-primary"></i> TypeScript
+          </div>
+          <div class="orbit-skill-node" style="bottom: 28%; right: 8%;">
+            <i class="fa-brands fa-aws text-warning"></i> AWS
+          </div>
+
+          <!-- Outer Orbit -->
+          <div class="orbit-skill-node" style="top: 5%; right: 28%;">
+            <i class="fa-brands fa-python text-info"></i> Python
+          </div>
+          <div class="orbit-skill-node" style="bottom: 5%; right: 25%;">
+            <i class="fa-brands fa-github text-white"></i> GitHub
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Stat Pill Container (Matching Bottom Bar in Reference Image) -->
+    <div class="cosmic-stats-bar mt-5">
+      <div class="row text-center gy-4">
+        <div class="col-6 col-md-3 stat-item">
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+            <i class="fa-solid fa-rocket text-primary fs-4"></i>
+            <span class="stat-number">20+</span>
+          </div>
+          <div class="stat-label">Projects Completed</div>
+        </div>
+
+        <div class="col-6 col-md-3 stat-item">
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+            <i class="fa-solid fa-code text-cyan fs-4"></i>
+            <span class="stat-number">2+</span>
+          </div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+
+        <div class="col-6 col-md-3 stat-item">
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+            <i class="fa-solid fa-users text-purple fs-4"></i>
+            <span class="stat-number">15+</span>
+          </div>
+          <div class="stat-label">Happy Clients</div>
+        </div>
+
+        <div class="col-6 col-md-3 stat-item">
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+            <i class="fa-solid fa-trophy text-warning fs-4"></i>
+            <span class="stat-number">5★</span>
+          </div>
+          <div class="stat-label">On Ratings</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust / Value Pipeline Section -->
+<section class="py-5">
+  <div class="container relative-z">
+    <div class="text-center mb-5">
+      <span class="text-cyan fw-bold text-uppercase fs-8 tracking-wider">HOW IT WORKS</span>
+      <h2 class="fw-bold mt-1 text-white">From Evidence to Opportunity</h2>
+      <p class="text-muted">Four transparent steps converting your actual achievements into career growth.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="sp-card p-4 text-center h-100">
+          <div class="bg-primary-subtle text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 60px; height: 60px;">
+            <i class="fa-solid fa-book-open fs-4"></i>
+          </div>
+          <div class="text-primary fw-bold small">01 — LEARN</div>
+          <h5 class="fw-bold my-2 text-white">Academic Learning</h5>
+          <p class="text-muted small mb-0">Import verified university coursework and academic grades.</p>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="sp-card p-4 text-center h-100">
+          <div class="bg-info-subtle text-info rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 60px; height: 60px;">
+            <i class="fa-solid fa-code fs-4"></i>
+          </div>
+          <div class="text-info fw-bold small">02 — BUILD</div>
+          <h5 class="fw-bold my-2 text-white">Practical Projects</h5>
+          <p class="text-muted small mb-0">Connect GitHub repositories, hackathons, and software builds.</p>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="sp-card p-4 text-center h-100">
+          <div class="bg-success-subtle text-success rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 60px; height: 60px;">
+            <i class="fa-solid fa-certificate fs-4"></i>
+          </div>
+          <div class="text-success fw-bold small">03 — VERIFY</div>
+          <h5 class="fw-bold my-2 text-white">Credentials & Proof</h5>
+          <p class="text-muted small mb-0">Automatic verification signatures validate every skill claim.</p>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="sp-card p-4 text-center h-100">
+          <div class="bg-warning-subtle text-warning rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 60px; height: 60px;">
+            <i class="fa-solid fa-bullseye fs-4"></i>
+          </div>
+          <div class="text-warning fw-bold small">04 — MATCH</div>
+          <h5 class="fw-bold my-2 text-white">Explainable Match</h5>
+          <p class="text-muted small mb-0">Get matched with internships, research, and teams with 100% transparency.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature Showcase Section -->
+<section class="py-5">
+  <div class="container relative-z">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold text-white">Built for Modern Career Mobility</h2>
+      <p class="text-muted">A comprehensive platform connecting verified student skill passports to top opportunities.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="sp-card p-4 h-100">
+          <div class="text-primary mb-3"><i class="fa-solid fa-shield-check fs-2"></i></div>
+          <h5 class="fw-bold text-white">Verified Skill Evidence</h5>
+          <p class="text-muted small">Convert coursework, hackathons, and certifications into structured, tamper-proof skill evidence.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="sp-card p-4 h-100">
+          <div class="text-info mb-3"><i class="fa-solid fa-id-card fs-2"></i></div>
+          <h5 class="fw-bold text-white">Portable Skill Passport</h5>
+          <p class="text-muted small">Share your digital passport link or export a PDF layout for recruiters.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="sp-card p-4 h-100">
+          <div class="text-success mb-3"><i class="fa-solid fa-diagram-project fs-2"></i></div>
+          <h5 class="fw-bold text-white">Explainable Matching</h5>
+          <p class="text-muted small">Every match breaks down exact percentage scores, matched skills, supporting evidence, and missing gaps.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="sp-card p-4 h-100">
+          <div class="text-warning mb-3"><i class="fa-solid fa-chart-line-up fs-2"></i></div>
+          <h5 class="fw-bold text-white">Skill Gap Analysis</h5>
+          <p class="text-muted small">Identify skills required by top opportunities and get actionable recommendations on how to close the gap.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="sp-card p-4 h-100">
+          <div class="text-purple mb-3"><i class="fa-solid fa-users-rectangle fs-2"></i></div>
+          <h5 class="fw-bold text-white">Multidisciplinary Teams</h5>
+          <p class="text-muted small">Build project teams with complementary skills for university hackathons and industry projects.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="sp-card p-4 h-100">
+          <div class="text-danger mb-3"><i class="fa-solid fa-scale-balanced fs-2"></i></div>
+          <h5 class="fw-bold text-white">Fair & Responsible AI</h5>
+          <p class="text-muted small">Recommendations rely strictly on verified skills and evidence. Protected demographic attributes are excluded.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="py-5 sp-glass-card text-white text-center rounded-4 my-5 container relative-z border border-primary border-opacity-50">
+  <div class="py-4">
+    <h2 class="fw-bold display-6 mb-3 text-gradient">Ready to Turn Your Learning Into Opportunity?</h2>
+    <p class="lead opacity-90 mb-4 text-muted">Create your verified Skill Passport in under 2 minutes.</p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="{% url 'register' %}" class="btn btn-sp-primary btn-lg">
+        Build Skill Passport
+      </a>
+      <a href="{% url 'demo_login' role='student' %}" class="btn btn-sp-outline btn-lg">
+        Log In as Demo Student
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

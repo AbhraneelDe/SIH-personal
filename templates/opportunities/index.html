@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Opportunity Marketplace — SkillPassport{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1"><i class="fa-solid fa-briefcase text-info me-2"></i> Opportunity Discovery Marketplace</h3>
+      <p class="text-muted mb-0">Discover 17+ realistic opportunities matched transparently against your verified skill passport.</p>
+    </div>
+  </div>
+
+  <!-- Search & Multi-Filter Bar -->
+  <div class="sp-card p-3 mb-4">
+    <form method="get" action="{% url 'opportunities_list' %}" class="row g-3 align-items-center">
+      <div class="col-md-5">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+          <input type="text" name="q" class="form-control border-start-0" placeholder="Search Python, AI/ML, Cloud, Data Science..." value="{{ query }}">
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <select name="category" class="form-select" onchange="this.form.submit()">
+          <option value="">All Categories</option>
+          {% for c_val, c_lbl in categories %}
+            <option value="{{ c_val }}" {% if selected_category == c_val %}selected{% endif %}>{{ c_lbl }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <select name="location_type" class="form-select" onchange="this.form.submit()">
+          <option value="">All Locations</option>
+          {% for l_val, l_lbl in location_types %}
+            <option value="{{ l_val }}" {% if selected_location == l_val %}selected{% endif %}>{{ l_lbl }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-sp-primary w-100">Filter</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Opportunity Grid Cards -->
+  <div class="row g-4">
+    {% for item in opportunities %}
+      <div class="col-md-6 col-lg-4">
+        <div class="sp-card p-4 h-100 d-flex flex-column justify-content-between">
+          <div>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="badge bg-light text-dark border">{{ item.opp.get_category_display }}</span>
+              <span class="badge {% if item.match_score >= 85 %}bg-success{% else %}bg-primary{% endif %} fs-7">
+                <i class="fa-solid fa-sparkles me-1"></i> {{ item.match_score }}% Match
+              </span>
+            </div>
+
+            <h5 class="fw-bold position-title mb-1">{{ item.opp.title }}</h5>
+            <div class="small mb-2" style="color: #cbd5e1 !important;"><i class="fa-solid fa-building text-info me-1"></i> {{ item.opp.organization }}</div>
+
+            <div class="d-flex flex-wrap gap-2 text-muted fs-8 mb-3">
+              <span><i class="fa-solid fa-location-dot me-1"></i> {{ item.opp.location }}</span>
+              <span>&bull;</span>
+              <span><i class="fa-solid fa-clock me-1"></i> {{ item.opp.duration }}</span>
+              <span>&bull;</span>
+              <span class="fw-bold text-success">{{ item.opp.stipend }}</span>
+            </div>
+
+            <p class="text-secondary small mb-3">{{ item.opp.description|truncatewords:20 }}</p>
+
+            <!-- Required Skills List -->
+            <div class="d-flex flex-wrap gap-1 mb-3">
+              {% for os in item.opp.opportunity_skills.all %}
+                <span class="badge {% if os.requirement_type == 'REQUIRED' %}bg-primary-subtle text-primary{% else %}bg-light text-dark border{% endif %} fs-8">
+                  {{ os.skill.name }}
+                </span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <a href="{% url 'opportunity_detail' opp_id=item.opp.id %}" class="btn btn-sp-outline w-100">
+            View Explainable Match Breakdown &rarr;
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center py-5 text-muted">
+        <i class="fa-solid fa-search display-4 mb-3 d-block"></i>
+        <h5>No opportunities match your filter criteria.</h5>
+        <a href="{% url 'opportunities_list' %}" class="btn btn-light border mt-2">Reset Filters</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account — SkillPassport{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="sp-card p-4 p-md-5">
+        <div class="text-center mb-4">
+          <div class="sp-brand fs-3 mb-2">
+            <i class="fa-solid fa-passport text-primary"></i> SkillPassport
+          </div>
+          <h4 class="fw-bold">Get Started</h4>
+          <p class="text-muted small">Turn your learning into career opportunities</p>
+        </div>
+
+        <form method="post" action="{% url 'register' %}">
+          {% csrf_token %}
+
+          <div class="mb-4 text-center">
+            <label class="form-label fw-semibold d-block">Account Type</label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="role" id="roleStudent" value="STUDENT" checked>
+              <label class="btn btn-outline-primary py-2" for="roleStudent">
+                <i class="fa-solid fa-user-graduate me-1"></i> Student
+              </label>
+
+              <input type="radio" class="btn-check" name="role" id="roleRecruiter" value="RECRUITER">
+              <label class="btn btn-outline-primary py-2" for="roleRecruiter">
+                <i class="fa-solid fa-user-tie me-1"></i> Recruiter / Employer
+              </label>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <label for="id_first_name" class="form-label fw-semibold">First Name</label>
+              <input type="text" name="first_name" id="id_first_name" class="form-control" required placeholder="Alex">
+            </div>
+            <div class="col-6">
+              <label for="id_last_name" class="form-label fw-semibold">Last Name</label>
+              <input type="text" name="last_name" id="id_last_name" class="form-control" required placeholder="Morgan">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="id_username" class="form-label fw-semibold">Username</label>
+            <input type="text" name="username" id="id_username" class="form-control" required placeholder="alex_morgan">
+          </div>
+
+          <div class="mb-3">
+            <label for="id_email" class="form-label fw-semibold">Email Address</label>
+            <input type="email" name="email" id="id_email" class="form-control" required placeholder="alex@stanford.edu">
+          </div>
+
+          <div class="mb-3">
+            <label for="id_university_or_company" class="form-label fw-semibold">University or Company</label>
+            <input type="text" name="university_or_company" id="id_university_or_company" class="form-control" placeholder="Stanford University / TechCorp">
+          </div>
+
+          <div class="mb-3">
+            <label for="id_headline_or_title" class="form-label fw-semibold">Degree or Designation</label>
+            <input type="text" name="headline_or_title" id="id_headline_or_title" class="form-control" placeholder="B.Tech Computer Science / Talent Manager">
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-6">
+              <label for="id_password1" class="form-label fw-semibold">Password</label>
+              <input type="password" name="password1" id="id_password1" class="form-control" required>
+            </div>
+            <div class="col-6">
+              <label for="id_password2" class="form-label fw-semibold">Confirm Password</label>
+              <input type="password" name="password2" id="id_password2" class="form-control" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-sp-primary w-100 py-2">Create Account</button>
+        </form>
+
+        <div class="text-center mt-4">
+          <p class="text-muted small mb-0">Already have an account? <a href="{% url 'login' %}" class="text-primary fw-semibold">Sign In</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

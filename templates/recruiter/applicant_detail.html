@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Applicant Review — {{ student.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="sp-card p-4 mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div>
+        <span class="badge bg-primary-subtle text-primary fw-bold mb-1">Applicant Evidence Review</span>
+        <h3 class="fw-bold mb-1">{{ student.user.get_full_name }}</h3>
+        <p class="text-muted mb-0">Applied for <strong>{{ opportunity.title }}</strong> &bull; Status: <span class="badge bg-info">{{ application.get_status_display }}</span></p>
+      </div>
+
+      <!-- Action Form to Change Status -->
+      <form method="post" class="d-flex align-items-center gap-2">
+        {% csrf_token %}
+        <select name="status" class="form-select form-select-sm">
+          <option value="APPLIED" {% if application.status == 'APPLIED' %}selected{% endif %}>Submitted</option>
+          <option value="UNDER_REVIEW" {% if application.status == 'UNDER_REVIEW' %}selected{% endif %}>Under Evidence Review</option>
+          <option value="SHORTLISTED" {% if application.status == 'SHORTLISTED' %}selected{% endif %}>Shortlist Candidate</option>
+          <option value="ACCEPTED" {% if application.status == 'ACCEPTED' %}selected{% endif %}>Accept Candidate</option>
+          <option value="REJECTED" {% if application.status == 'REJECTED' %}selected{% endif %}>Not Selected</option>
+        </select>
+        <button type="submit" class="btn btn-sm btn-sp-primary text-nowrap">Update Status</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Match Explanation -->
+    <div class="col-lg-6">
+      <div class="sp-card p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-scale-balanced text-primary me-2"></i> Explainable Match Evaluation</h5>
+        <div class="p-3 bg-light rounded-3 text-center mb-3">
+          <span class="text-muted fs-8 fw-bold">SKILL MATCH SCORE</span>
+          <h1 class="display-6 fw-bold text-primary mb-0">{{ match_explanation.score_pct }}%</h1>
+        </div>
+
+        <h6 class="fw-bold text-success mb-2">Matched Skills & Evidence Proof</h6>
+        <ul class="list-group list-group-flush mb-3">
+          {% for ms in match_explanation.matched_skills %}
+            <li class="list-group-item bg-transparent px-0 py-2 border-bottom">
+              <div class="d-flex justify-content-between">
+                <strong>{{ ms.skill_name }}</strong>
+                <span class="badge bg-success">{{ ms.student_score }}% {{ ms.proficiency }}</span>
+              </div>
+              <div class="text-muted fs-8 mt-1">Verified: {{ ms.evidence_titles|join:", " }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <div class="p-2 bg-light rounded text-muted fs-8">
+          <i class="fa-solid fa-shield-halved text-success me-1"></i> Fairness Guarantee: This evaluation is generated exclusively from verified skills and project records. Demographic factors are strictly excluded.
+        </div>
+      </div>
+    </div>
+
+    <!-- Candidate Cover Statement & Passport Link -->
+    <div class="col-lg-6">
+      <div class="sp-card p-4 h-100 d-flex flex-column justify-content-between">
+        <div>
+          <h5 class="fw-bold mb-3">Cover Statement</h5>
+          <div class="p-3 bg-light rounded mb-4 text-secondary">
+            {{ application.cover_note|default:"No additional cover note provided." }}
+          </div>
+
+          <h5 class="fw-bold mb-2">Candidate Overview</h5>
+          <p class="text-muted small mb-1"><strong>University:</strong> {{ student.university }}</p>
+          <p class="text-muted small mb-1"><strong>Degree:</strong> {{ student.degree }} (Graduation {{ student.graduation_year }})</p>
+          <p class="text-muted small mb-3"><strong>Skill Strength Rating:</strong> {{ student.overall_skill_score }}%</p>
+        </div>
+
+        <a href="{% url 'public_passport' slug=student.passport_slug %}" target="_blank" class="btn btn-sp-outline w-100">
+          <i class="fa-solid fa-id-card me-1"></i> View Full Portable Skill Passport &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

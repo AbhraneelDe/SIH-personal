@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Recruiter Dashboard — SkillPassport{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="sp-glass-card p-4 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div>
+      <h3 class="fw-bold mb-1"><i class="fa-solid fa-briefcase text-primary me-2"></i> Recruiter Talent Dashboard</h3>
+      <p class="text-muted mb-0">Manage job postings, review evidence-backed candidate passports, and shortlist top talent.</p>
+    </div>
+    <a href="{% url 'create_opportunity' %}" class="btn btn-sp-primary">
+      <i class="fa-solid fa-plus me-1"></i> Post New Opportunity
+    </a>
+  </div>
+
+  <!-- Metric Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="sp-card p-3 text-center">
+        <div class="text-muted fs-8 fw-bold text-uppercase">Active Opportunities</div>
+        <h2 class="fw-bold text-primary mb-0">{{ total_opportunities }}</h2>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="sp-card p-3 text-center">
+        <div class="text-muted fs-8 fw-bold text-uppercase">Total Applications</div>
+        <h2 class="fw-bold text-info mb-0">{{ total_applicants }}</h2>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="sp-card p-3 text-center">
+        <div class="text-muted fs-8 fw-bold text-uppercase">Shortlisted Candidates</div>
+        <h2 class="fw-bold text-success mb-0">{{ shortlisted_count }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Applications Table -->
+  <div class="sp-card p-4">
+    <h5 class="fw-bold mb-3">Applicant Evidence Review Queue</h5>
+    <div class="table-responsive">
+      <table class="table align-middle table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Candidate</th>
+            <th>Opportunity</th>
+            <th>Evidence Match</th>
+            <th>Status</th>
+            <th>Applied Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in applications %}
+            <tr>
+              <td>
+                <strong class="text-dark">{{ app.student.user.get_full_name }}</strong>
+                <div class="text-muted fs-8">{{ app.student.degree }} &bull; {{ app.student.university }}</div>
+              </td>
+              <td class="small text-muted">{{ app.opportunity.title }}</td>
+              <td>
+                <span class="badge {% if app.match_score_pct_at_apply >= 85 %}bg-success{% else %}bg-primary{% endif %}">
+                  {{ app.match_score_pct_at_apply }}% Match
+                </span>
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border">{{ app.get_status_display }}</span>
+              </td>
+              <td class="small text-muted">{{ app.applied_at|date:"M d, Y" }}</td>
+              <td>
+                <a href="{% url 'applicant_detail' app_id=app.id %}" class="btn btn-sm btn-sp-outline">
+                  Review Skill Evidence &rarr;
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">No applications received yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
